@@ -46,21 +46,14 @@ def is_not_usuario(user):
     return False
 
 
-def usuario_required(function=None, request=None):
-    actual_decorator = user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
-                                        login_url='login')
-    if function:
-        return actual_decorator(function)
-    else:
-        return actual_decorator and messages.warning(request, 'Access Denied')
-
-
-@login_required
-@usuario_required
+@login_required(redirect_field_name='login', login_url='login')
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def dash_user(request):
     current_user = request.user.id
     usuario = get_object_or_404(Usuario, id=current_user)
     contexto = {'usuario': usuario}
+
     return render(request, 'usuario/dash.html', contexto)
 
 
@@ -240,11 +233,14 @@ def novo_exame(request):
         exame = form.save(commit=False)
         exame.paciente = user
         form.save()
+        messages.success(request, 'Exame cadastrado com sucesso')
+        return redirect('dash_user')
 
     return render(request, 'usuario/cadastrar_exame.html', {'form': form})
 
 
 def listar_exames_usuario(request):
+
     current_user = request.user.id
     exames = Exames.objects.filter(paciente_id=current_user)
 
@@ -269,3 +265,16 @@ def detalhe_exame(request, exame_id):
 
 def graficos_exames(request):
     return render(request, 'usuario/area_grafica.html')
+
+
+def excluir_exame(request, exame_id):
+    exame = get_object_or_404(Exames, id=exame_id)
+
+    if request.method == 'GET':
+        exame.delete()
+        messages.success(request, 'Exame apagado com sucesso')
+        return HttpResponseRedirect('/dashboard/meus_exames/')
+
+    return render(request, 'usuario/delete_exame.html')
+
+

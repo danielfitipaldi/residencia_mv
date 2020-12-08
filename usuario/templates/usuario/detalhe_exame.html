@@ -21,27 +21,69 @@
       <dt>Hematocrito</dt>
       <dd>{{ exame.hematocrito }}</dd>
 
-      <dt>País</dt>
-      <dd>{{ artista.pais }}</dd>
+      <dt>Hemoglobina</dt>
+      <dd>{{ exame.hemoglobina }}</dd>
 
-      <dt>Estado</dt>
-      <dd>{{ artista.estado }}</dd>
+      <dt>VCM</dt>
+      <dd>{{ exame.VCM }}</dd>
 
-      <dt>Cidade</dt>
-      <dd>{{ artista.cidade }}</dd>
+      <dt>HCM</dt>
+      <dd>{{ exame.HCM }}</dd>
 
-      <dt>Gênero</dt>
-      <dd>{{ artista.genero }}</dd>
+      <dt>CHCM</dt>
+      <dd>{{ exame.CHCM }}</dd>
 
-      <dt>Descrição</dt>
-      <dd>{{ artista.sobre }}</dd>
+      <dt>RDW</dt>
+      <dd>{{ exame.RDW }}</dd>
+
+      <dt>Eritroblastos</dt>
+      <dd>{{ exame.eritroblastos }}</dd>
+
+      <dt>Leucocitos</dt>
+      <dd>{{ exame.leucocitos }}</dd>
+
+      <dt>Mielocitos</dt>
+      <dd>{{ exame.mielocitos }}</dd>
+
+      <dt>Metamielocitos</dt>
+      <dd>{{ exame.metamielocitos }}</dd>
+
+      <dt>Bastonetes</dt>
+      <dd>{{ exame.bastonetes }}</dd>
+
+      <dt>Segmentados</dt>
+      <dd>{{ exame.segmentados }}</dd>
+
+      <dt>Neutrofilos Totais</dt>
+      <dd>{{ exame.neutrofilos_totais }}</dd>
+
+      <dt>Eosinofilos</dt>
+      <dd>{{ exame.eosinofilos }}</dd>
+
+      <dt>Basofilos</dt>
+      <dd>{{ exame.basofilos }}</dd>
+
+      <dt>Linfocitos</dt>
+      <dd>{{ exame.linfocitos }}</dd>
+
+      <dt>Linfocitos Atípicos</dt>
+      <dd>{{ exame.linfocitos_atipicos }}</dd>
+
+      <dt>Monocitos</dt>
+      <dd>{{ exame.monocitos }}</dd>
+
+      <dt>Plasmocitos</dt>
+      <dd>{{ exame.plasmocitos }}</dd>
+
+      <dt>Plaquetas</dt>
+      <dd>{{ exame.plaquetas }}</dd>
 
     </dl>
      <a href="#" class="btn btn-info btn-lg">
       <span class="glyphicon glyphicon-log-out"></span> Editar
     </a>
-    <a href="#" class="btn btn-info btn-lg">
-      <span class="glyphicon glyphicon-log-out"></span> Deletar
+    <a href="{% url 'excluir_exame' exame.id %}" class="btn btn-info btn-lg">
+      <span class="glyphicon glyphicon-log-out"></span> Excluir
     </a>
 
 

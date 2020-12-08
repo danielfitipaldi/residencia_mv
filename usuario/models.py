@@ -80,9 +80,9 @@ class Usuario(models.Model):
 
 
 class Exames(models.Model):
-    paciente = models.ForeignKey(User, on_delete=models.CASCADE)
+    paciente = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
-    laboratorio = models.ForeignKey(Laboratorio, on_delete=models.CASCADE, null=True)
+    laboratorio = models.ForeignKey(Laboratorio, on_delete=models.DO_NOTHING, null=True)
 
     data_criacao = models.DateTimeField(
         default=timezone.now,
