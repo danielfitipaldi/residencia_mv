@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.decorators import user_passes_test, permission_required, login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .form import FormUsuario, UserForm, FormExames
 from django.contrib import auth, messages
 from django.core.validators import validate_email
-from .models import Usuario
+from .models import Usuario, Exames
 
 
 def home(request):
@@ -28,7 +28,7 @@ def login(request):
     else:
         auth.login(request, user)
         messages.success(request, f'Você está logado como {user}')
-        return redirect('dash')
+        return redirect('dash_user')
 
 
 def logout(request):
@@ -36,13 +36,32 @@ def logout(request):
     return redirect('login')
 
 
-def is_usuario(user):
-    return user.groups.filter(id=1).exists()
+def is_not_usuario(user):
+    """
+    Verifica se o usuário não pertence a um determinado grupo
+    e retorna True caso pertença.
+    """
+    if user:
+        return user.groups.filter(id=1).exists()
+    return False
 
 
-@user_passes_test(is_usuario)
-def dash(request):
-    return render(request, 'usuario/dash.html')
+def usuario_required(function=None, request=None):
+    actual_decorator = user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                                        login_url='login')
+    if function:
+        return actual_decorator(function)
+    else:
+        return actual_decorator and messages.warning(request, 'Access Denied')
+
+
+@login_required
+@usuario_required
+def dash_user(request):
+    current_user = request.user.id
+    usuario = get_object_or_404(Usuario, id=current_user)
+    contexto = {'usuario': usuario}
+    return render(request, 'usuario/dash.html', contexto)
 
 
 def cadastrar(request):
@@ -123,6 +142,9 @@ def cadastrar(request):
 
 
 # Editar cadastro
+@login_required
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def editar(request, usuario_id):
     obj = get_object_or_404(Usuario, id=usuario_id)
 
@@ -163,6 +185,9 @@ def editar(request, usuario_id):
     return render(request, 'usuario/editar_cadastro.html', {'form1': form1, 'form2': form2})
 
 
+@login_required
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def listar(request):
     usuarios = Usuario.objects.order_by('-id')
 
@@ -177,6 +202,9 @@ def listar(request):
     })
 
 
+@login_required
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def deletar_usuario(request, usuario_id):
     usuario = get_object_or_404(Usuario, id=usuario_id)
 
@@ -188,8 +216,18 @@ def deletar_usuario(request, usuario_id):
     return render(request, "usuario/delete_usuario.html")
 
 
-# EXAMES
+def detalhe_perfil(request, perfil_id):
+    usuario = get_object_or_404(Usuario, id=perfil_id)
 
+    return render(request, 'usuario/detalhe_perfil.html', {
+        'usuario': usuario
+    })
+
+
+# EXAMES
+@login_required
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def novo_exame(request):
     form = FormExames(request.POST or None)
     current_user = request.user.id
@@ -205,3 +243,29 @@ def novo_exame(request):
 
     return render(request, 'usuario/cadastrar_exame.html', {'form': form})
 
+
+def listar_exames_usuario(request):
+    current_user = request.user.id
+    exames = Exames.objects.filter(paciente_id=current_user)
+
+    paginator = Paginator(exames, 11)
+
+    page = request.GET.get('page')
+
+    exames = paginator.get_page(page)
+
+    return render(request, 'usuario/exames_por_usuario.html', {
+        'exames': exames
+    })
+
+
+def detalhe_exame(request, exame_id):
+    exame = get_object_or_404(Exames, id=exame_id)
+
+    return render(request, 'usuario/detalhe_exame.html', {
+        'exame': exame
+    })
+
+
+def graficos_exames(request):
+    return render(request, 'usuario/area_grafica.html')

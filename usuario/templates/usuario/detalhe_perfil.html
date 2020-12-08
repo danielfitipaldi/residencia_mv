@@ -1,0 +1,51 @@
+{% extends 'base.html'%}
+
+{%block content%}
+
+<div class="container">
+<h1 class="mt-5">{{ usuario.usuario.first_name }} {{ usuario.usuario.last_name }}</h1>
+
+
+  <dl>
+      <dt>ID</dt>
+      <dd>{{ usuario.id }}</dd>
+
+      <dt>CPF</dt>
+      <dd>{{ usuario.cpf }}</dd>
+
+      <dt>E-mail</dt>
+      <dd>{{ usuario.usuario.email }}</dd>
+
+      <dt>Data de Criação do perfil</dt>
+      <dd>{{ usuario.data_criacao | date:'d/m/Y h:i:s'}}</dd>
+
+      <dt>Data de Nascimento</dt>
+      <dd>{{ usuario.data_nascimento | date:'d/m/Y'}}</dd>
+
+      <dt>Gênero</dt>
+      <dd>{{ usuario.genero }}</dd>
+
+      <dt>Bairro</dt>
+      <dd>{{ usuario.bairro }}</dd>
+
+      <dt>Estado</dt>
+      <dd>{{ usuario.estado }}</dd>
+
+      <dt>Cidade</dt>
+      <dd>{{ usuario.cidade }}</dd>
+
+      <dt>País</dt>
+      <dd>{{ usuario.pais }}</dd>
+
+
+    </dl>
+     <a href="{% url 'editar' usuario.id %}" class="btn btn-info btn-lg">
+      <span class="glyphicon glyphicon-log-out"></span> Editar Perfil
+    </a>
+    <a href="{% url 'deletar_usuario' usuario.id %}" class="btn btn-info btn-lg">
+      <span class="glyphicon glyphicon-log-out"></span> Deletar Perfil
+    </a>
+
+
+</div>
+{%endblock%}

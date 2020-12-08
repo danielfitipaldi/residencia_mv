@@ -70,4 +70,4 @@ class Laboratorio(models.Model):
     )
 
     def __str__(self):
-        return f'{self.dados.first_name}'
+        return f'{self.dados.username}'

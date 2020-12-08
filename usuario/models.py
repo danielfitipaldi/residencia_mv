@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+from laboratorio.models import Laboratorio
+
 
 class Usuario(models.Model):
 
@@ -77,63 +79,11 @@ class Usuario(models.Model):
         return f'{self.usuario.first_name} {self.usuario.last_name}'
 
 
-class Exame(models.Model):
-    paciente = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    data_criacao = models.DateTimeField(
-        default=timezone.now,
-        verbose_name='Data de Criação'
-    )
-
-    hemacias = models.FloatField(default=None)
-
-    hematocrito = models.FloatField(default=None)
-
-    hemoglobina = models.FloatField(default=None)
-
-    VCM = models.FloatField(default=None)
-
-    HCM = models.FloatField(default=None)
-
-    CHCM = models.FloatField(default=None)
-
-    RDW = models.FloatField(default=None)
-
-    eritroblastos = models.FloatField(default=None)
-
-    leucocitos = models.FloatField(default=None)
-
-    mielocitos = models.FloatField(default=None)
-
-    metamielocitos = models.FloatField(default=None)
-
-    bastonetes = models.FloatField(default=None)
-
-    segmentados = models.FloatField(default=None)
-
-    neutrofilos_totais = models.FloatField(default=None)
-
-    eosinofilos = models.FloatField(default=None)
-
-    basofilos = models.FloatField(default=None)
-
-    linfocitos = models.FloatField(default=None)
-
-    linfocitos_atipicos = models.FloatField(default=None)
-
-    monocitos = models.FloatField(default=None)
-
-    plasmocitos = models.FloatField(default=None)
-
-    plaquetas = models.FloatField(default=None)
-
-    def __str__(self):
-        return f'{self.paciente.first_name} {self.paciente.last_name}'
-
-
 class Exames(models.Model):
     paciente = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    laboratorio = models.ForeignKey(Laboratorio, on_delete=models.CASCADE, null=True)
+
     data_criacao = models.DateTimeField(
         default=timezone.now,
         verbose_name='Data de Criação'
@@ -183,3 +133,4 @@ class Exames(models.Model):
 
     def __str__(self):
         return f'{self.paciente.first_name} {self.paciente.last_name}'
+

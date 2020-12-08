@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.shortcuts import render, redirect, get_object_or_404
@@ -38,7 +39,37 @@ def cadastrar_med(request):
     form1 = UserForm(request.POST or None)
     form2 = MedicoForm(request.POST or None)
 
+    email = request.POST.get('email')
+    crm = request.POST.get('crm')
+    username = request.POST.get('username')
+    first_name = request.POST.get('first_name')
+    last_name = request.POST.get('last_name')
+    senha = request.POST.get('senha')
+    confirmar_senha = request.POST.get('confirmar_senha')
+
+    # Validações
+
+    # USUÁRIO
     if request.method != 'POST':
+        return render(request, 'medico/cadastro_medico.html', {'form1': form1, 'form2': form2})
+
+    if not username or not senha or not confirmar_senha or not first_name or not last_name or not crm or not email:
+        messages.error(request, 'Todos os campos devem ser preenchidos')
+        return render(request, 'medico/cadastro_medico.html', {'form1': form1, 'form2': form2})
+
+    # CRM
+
+    if len(crm) > 8:
+        messages.error(request, 'CRM inválido')
+        form1 = UserForm()
+        form2 = MedicoForm()
+        return render(request, 'medico/editar_medico.html', {'form1': form1, 'form2': form2})
+
+    # SENHA
+    if senha != confirmar_senha:
+        messages.error(request, 'Senhas não coincidem')
+        form1 = UserForm()
+        form2 = MedicoForm()
         return render(request, 'medico/cadastro_medico.html', {'form1': form1, 'form2': form2})
 
     if form1.is_valid():
@@ -58,15 +89,16 @@ def cadastrar_med(request):
     return render(request, 'medico/cadastro_medico.html', {'form1': form1, 'form2': form2})
 
 
+@login_required(redirect_field_name='login_med', login_url='login_med')
 def dash_med(request):
     return render(request, 'medico/dashboard_medico.html')
 
 
+@login_required(redirect_field_name='login_med', login_url='login_med')
 def editar_med(request, med_id):
     obj = get_object_or_404(Medico, id=med_id)
 
     email = request.POST.get('email')
-    cpf = request.POST.get('cpf')
     crm = request.POST.get('crm')
 
     form1 = UserForm(request.POST or None, instance=obj.dados_pessoais)
@@ -102,6 +134,7 @@ def editar_med(request, med_id):
     return render(request, 'laboratorio/editar_laboratorio.html', {'form1': form1, 'form2': form2})
 
 
+@login_required(redirect_field_name='login_med', login_url='login_med')
 def deletar_med(request, med_id):
     medico = get_object_or_404(Medico, id=med_id)
     fk_user = medico.dados_pessoais

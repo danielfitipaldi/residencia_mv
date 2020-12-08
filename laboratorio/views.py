@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.shortcuts import render, redirect, get_object_or_404
 from .form import *
@@ -31,6 +32,7 @@ def logout_lab(request):
     return redirect('login_lab')
 
 
+@login_required(redirect_field_name='login_lab', login_url='login_lab')
 def cadastrar_lab(request):
     form1 = UserForm(request.POST or None)
     form2 = LaboratorioForm(request.POST or None)
@@ -95,12 +97,13 @@ def cadastrar_lab(request):
     return render(request, 'laboratorio/cadastro_laboratorio.html', {'form1': form1, 'form2': form2})
 
 
+@login_required(redirect_field_name='login_lab', login_url='login_lab')
 def dash_lab(request):
     return render(request, 'laboratorio/dash_lab.html')
 
 
 # Editar cadastro de laboratório
-
+@login_required(redirect_field_name='login_lab', login_url='login_lab')
 def editar_lab(request, lab_id):
     obj = get_object_or_404(Laboratorio, id=lab_id)
 

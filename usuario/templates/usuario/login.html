@@ -1,8 +1,8 @@
 {% extends 'base.html'%}
 
 {% block content %}
-{% include 'parcials/_messages.html'%}
 
+{% include 'parcials/_messages.html'%}
 
 <div class="container-main" >
     <form method="POST" action="{% url 'login' %}" >
@@ -23,6 +23,8 @@
       <a href="{% url 'cadastrar'%}">Registrar</a>
     </div>
 </div>
+
+
 
 {%endblock%}
 

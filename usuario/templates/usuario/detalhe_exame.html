@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+<h1 class="mt-5">{{ exame.paciente.first_name }} {{ exame.paciente.last_name }}</h1>
+
+
+  <dl>
+      <dt>ID</dt>
+      <dd>{{ exame.id }}</dd>
+
+      <dt>Laboratório</dt>
+      <dd>{{ exame.laboratorio }}</dd>
+
+       <dt>Data do exame</dt>
+      <dd>{{ exame.data_criacao | date:'d/m/Y h:i:s'}}</dd>
+
+      <dt>Hemácias</dt>
+      <dd>{{ exame.hemacias }}</dd>
+
+      <dt>Hematocrito</dt>
+      <dd>{{ exame.hematocrito }}</dd>
+
+      <dt>País</dt>
+      <dd>{{ artista.pais }}</dd>
+
+      <dt>Estado</dt>
+      <dd>{{ artista.estado }}</dd>
+
+      <dt>Cidade</dt>
+      <dd>{{ artista.cidade }}</dd>
+
+      <dt>Gênero</dt>
+      <dd>{{ artista.genero }}</dd>
+
+      <dt>Descrição</dt>
+      <dd>{{ artista.sobre }}</dd>
+
+    </dl>
+     <a href="#" class="btn btn-info btn-lg">
+      <span class="glyphicon glyphicon-log-out"></span> Editar
+    </a>
+    <a href="#" class="btn btn-info btn-lg">
+      <span class="glyphicon glyphicon-log-out"></span> Deletar
+    </a>
+
+
+
+
+</div>
+
+{% endblock %}
