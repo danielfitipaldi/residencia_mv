@@ -1,11 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.shortcuts import render, redirect, get_object_or_404
-from .form import UserForm, MedicoForm
+from .form import UserForm, MedicoForm, FormPacientes
 from django.contrib import auth, messages
-
-from .models import Medico
+from .models import Medico, MeusPacientes
 
 
 def index(request):
@@ -91,7 +89,10 @@ def cadastrar_med(request):
 
 @login_required(redirect_field_name='login_med', login_url='login_med')
 def dash_med(request):
-    return render(request, 'medico/dashboard_medico.html')
+    current_user = request.user.id
+    medico = get_object_or_404(Medico, dados_pessoais_id=current_user)
+    contexto = {'medico': medico}
+    return render(request, 'medico/dashboard_medico.html', contexto)
 
 
 @login_required(redirect_field_name='login_med', login_url='login_med')
@@ -137,13 +138,48 @@ def editar_med(request, med_id):
 @login_required(redirect_field_name='login_med', login_url='login_med')
 def deletar_med(request, med_id):
     medico = get_object_or_404(Medico, id=med_id)
-    fk_user = medico.dados_pessoais
-    user = get_object_or_404(User, id=fk_user)
 
     if request.method == "GET":
         medico.delete()
-        user.delete()
         messages.success(request, 'Usuário apagado com sucesso')
-        return redirect("/home")
+        return redirect('home')
 
     return render(request, "medico/delete_med.html")
+
+
+def adicionar_paciente(request):
+    form = FormPacientes(request.POST or None)
+
+    if request.method != 'POST':
+        form = FormPacientes()
+        return render(request, 'medico/adicionar_paciente.html', {'form': form})
+
+    current_user = request.user.id
+    medico = get_object_or_404(Medico, dados_pessoais_id=current_user)
+
+    if form.is_valid():
+        dados = form.save(commit=False)
+        dados.medico = medico
+        form.save()
+        messages.success(request, 'Paciente Adicionado com sucesso')
+        return redirect('dash_med')
+
+    return render(request, 'medico/adicionar_paciente.html', {'form': form})
+
+
+def lista_pacientes(request):
+
+    pacientes = MeusPacientes.objects.order_by('id')
+
+    return render(request, 'medico/lista_pacientes.html', {'pacientes': pacientes})
+
+
+def excluir_paciente(request, paciente_id):
+    paciente = get_object_or_404(MeusPacientes, id=paciente_id)
+
+    if request.method == "GET":
+        paciente.delete()
+        messages.success(request, 'Paciente excluído com sucesso')
+        return redirect('lista_pacientes')
+
+    return render(request, "medico/excluir_paciente.html")

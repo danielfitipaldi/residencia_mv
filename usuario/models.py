@@ -80,6 +80,7 @@ class Usuario(models.Model):
 
 
 class Exames(models.Model):
+
     paciente = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     laboratorio = models.ForeignKey(Laboratorio, on_delete=models.DO_NOTHING, null=True)

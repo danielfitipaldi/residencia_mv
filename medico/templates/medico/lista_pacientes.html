@@ -1,0 +1,40 @@
+{% extends 'base.html'%}
+
+{% block content%}
+
+{% include 'parcials/_messages.html'%}
+
+<table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Sobrenome</th>
+          <th>CPF</th>
+          <th>E-mail</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {% for paciente in pacientes %}
+          <tr>
+            <td> {{ paciente.id }}</td>
+            <td>
+              <a href="#"> {{ paciente.paciente.usuario.first_name }} </a>
+            </td>
+           <td>
+              <a href="#"> {{ paciente.paciente.usuario.last_name }} </a>
+            </td>
+            <td>{{ paciente.paciente.usuario.cpf }}</td>
+            <td>{{ paciente.paciente.usuario.email }}</td>
+              <td><a href="{% url 'excluir_paciente' paciente.id %}" class="btn btn-info btn-lg">
+              <span class="glyphicon glyphicon-log-out"></span> Excluir
+            </a> </td>
+
+          </tr>
+        {%endfor%}
+      </tbody>
+    </table>
+
+
+{% endblock %}

@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
+
+from laboratorio.views import is_not_lab
 from .form import FormUsuario, UserForm, FormExames
 from django.contrib import auth, messages
 from django.core.validators import validate_email
@@ -31,6 +33,9 @@ def login(request):
         return redirect('dash_user')
 
 
+@login_required(redirect_field_name='login', login_url='login')
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def logout(request):
     auth.logout(request)
     return redirect('login')
@@ -135,7 +140,7 @@ def cadastrar(request):
 
 
 # Editar cadastro
-@login_required
+@login_required(redirect_field_name='login', login_url='login')
 @user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
                   login_url='login')
 def editar(request, usuario_id):
@@ -178,7 +183,7 @@ def editar(request, usuario_id):
     return render(request, 'usuario/editar_cadastro.html', {'form1': form1, 'form2': form2})
 
 
-@login_required
+@login_required(redirect_field_name='login', login_url='login')
 @user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
                   login_url='login')
 def listar(request):
@@ -195,7 +200,7 @@ def listar(request):
     })
 
 
-@login_required
+@login_required(redirect_field_name='login', login_url='login')
 @user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
                   login_url='login')
 def deletar_usuario(request, usuario_id):
@@ -209,6 +214,9 @@ def deletar_usuario(request, usuario_id):
     return render(request, "usuario/delete_usuario.html")
 
 
+@login_required(redirect_field_name='login', login_url='login')
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def detalhe_perfil(request, perfil_id):
     usuario = get_object_or_404(Usuario, id=perfil_id)
 
@@ -218,7 +226,7 @@ def detalhe_perfil(request, perfil_id):
 
 
 # EXAMES
-@login_required
+@login_required(redirect_field_name='login', login_url='login')
 @user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
                   login_url='login')
 def novo_exame(request):
@@ -239,6 +247,9 @@ def novo_exame(request):
     return render(request, 'usuario/cadastrar_exame.html', {'form': form})
 
 
+@login_required(redirect_field_name='login', login_url='login')
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def listar_exames_usuario(request):
 
     current_user = request.user.id
@@ -255,6 +266,9 @@ def listar_exames_usuario(request):
     })
 
 
+@login_required(redirect_field_name='login', login_url='login')
+@user_passes_test(lambda user: is_not_usuario(user) or is_not_lab(user), redirect_field_name='login',
+                  login_url='login')
 def detalhe_exame(request, exame_id):
     exame = get_object_or_404(Exames, id=exame_id)
 
@@ -263,10 +277,16 @@ def detalhe_exame(request, exame_id):
     })
 
 
+@login_required(redirect_field_name='login', login_url='login')
+@user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
+                  login_url='login')
 def graficos_exames(request):
     return render(request, 'usuario/area_grafica.html')
 
 
+@login_required(redirect_field_name='login', login_url='login')
+@user_passes_test(lambda user: is_not_usuario(user) or is_not_lab(user), redirect_field_name='login',
+                  login_url='login')
 def excluir_exame(request, exame_id):
     exame = get_object_or_404(Exames, id=exame_id)
 

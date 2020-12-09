@@ -6,7 +6,7 @@
     <form method="POST" action="{% url 'login_med' %}" >
         {% csrf_token %}
       <div class="form-group" >
-        <h1>Login</h1>
+        <h1>Médico</h1>
         <label>Usuário</label>
         <input type="text" name="usuario" value="{{ request.POST.usuario }}"  class="form-control" style="color: black;">
        </div>

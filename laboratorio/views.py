@@ -1,12 +1,10 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.validators import validate_email
 from django.shortcuts import render, redirect, get_object_or_404
+
+from usuario.models import Exames
 from .form import *
 from django.contrib import auth, messages
-
-
-def index(request):
-    return render(request, 'laboratorio/index.html')
 
 
 def login_lab(request):
@@ -27,6 +25,9 @@ def login_lab(request):
         return redirect('dash_lab')
 
 
+@login_required(redirect_field_name='login_lab', login_url='login_lab')
+@user_passes_test(lambda user: is_not_lab(user), redirect_field_name='login_lab',
+                  login_url='login_lab')
 def logout_lab(request):
     auth.logout(request)
     return redirect('login_lab')
@@ -110,7 +111,10 @@ def is_not_lab(user):
 @user_passes_test(lambda user: is_not_lab(user), redirect_field_name='login_lab',
                   login_url='login_lab')
 def dash_lab(request):
-    return render(request, 'laboratorio/dash_lab.html')
+    current_user = request.user.id
+    laboratorio = get_object_or_404(Laboratorio, dados_id=current_user)
+    contexto = {'laboratorio': laboratorio}
+    return render(request, 'laboratorio/dash_lab.html', contexto)
 
 
 # Editar cadastro de laboratório
@@ -154,3 +158,16 @@ def editar_lab(request, lab_id):
         return redirect('dash_lab')
 
     return render(request, 'laboratorio/editar_laboratorio.html', {'form1': form1, 'form2': form2})
+
+
+@login_required(redirect_field_name='login_lab', login_url='login_lab')
+@user_passes_test(lambda user: is_not_lab(user), redirect_field_name='login_lab',
+                  login_url='login_lab')
+def listar_exames_laboratorio(request):
+    current_user = request.user.id
+    laboratorio = get_object_or_404(Laboratorio, dados_id=current_user)
+    exames = Exames.objects.filter(laboratorio_id=laboratorio)
+
+    return render(request, 'laboratorio/exames_por_laboratorio.html', {'exames': exames})
+
+

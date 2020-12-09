@@ -1,0 +1,28 @@
+{% extends 'base.html'%}
+
+{%block content%}
+<table class="table">
+      <thead>
+        <tr>
+          <th>Número do exame</th>
+          <th>Nome</th>
+          <th>Laboratório</th>
+          <th>Data do Exame</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {% for exame in exames %}
+          <tr>
+            <td>
+                <a href="{% url 'detalhe_exame' exame.id %}"> {{ exame.id }}</a>
+            </td>
+            <td>{{ exame.paciente.first_name }} {{ exame.paciente.last_name }}</td>
+            <td>{{ exame.laboratorio }}</td>
+            <td>{{ exame.data_criacao }}</td>
+          </tr>
+        {%endfor%}
+      </tbody>
+    </table>
+
+{% endblock %}
