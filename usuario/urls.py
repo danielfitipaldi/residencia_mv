@@ -20,5 +20,6 @@ urlpatterns = [
     path('dashboard/meus_exames/<int:exame_id>', views.detalhe_exame, name='detalhe_exame'),
     path('dashboard/meu_perfil/<int:perfil_id>', views.detalhe_perfil, name='detalhe_perfil'),
     path('dashboard/meus_exames/graficos/', views.graficos_exames, name='graficos_exames'),
-    path('dashboard/meus_exames/excluir_exame/<int:exame_id>', views.excluir_exame, name='excluir_exame')
+    path('dashboard/meus_exames/excluir_exame/<int:exame_id>', views.excluir_exame, name='excluir_exame'),
+    path('dashboard/meus_exames/', views.listar_exames_usuario, name='listar_exames_usuario')
 ]

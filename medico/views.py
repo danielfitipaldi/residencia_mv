@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.validators import validate_email
 from django.shortcuts import render, redirect, get_object_or_404
 from .form import UserForm, MedicoForm, FormPacientes
@@ -6,8 +6,10 @@ from django.contrib import auth, messages
 from .models import Medico, MeusPacientes
 
 
-def index(request):
-    return render(request, 'medico/index.html')
+def is_not_medico(user):
+    if user:
+        return user.groups.filter(id=3).exists()
+    return False
 
 
 def login_med(request):
@@ -28,6 +30,9 @@ def login_med(request):
         return redirect('dash_med')
 
 
+@login_required(redirect_field_name='login_med', login_url='login_med')
+@user_passes_test(lambda user: is_not_medico(user), redirect_field_name='login_med',
+                  login_url='login_med')
 def logout_med(request):
     auth.logout(request)
     return redirect('login_med')
@@ -88,6 +93,8 @@ def cadastrar_med(request):
 
 
 @login_required(redirect_field_name='login_med', login_url='login_med')
+@user_passes_test(lambda user: is_not_medico(user), redirect_field_name='login_med',
+                  login_url='login_med')
 def dash_med(request):
     current_user = request.user.id
     medico = get_object_or_404(Medico, dados_pessoais_id=current_user)
@@ -96,6 +103,8 @@ def dash_med(request):
 
 
 @login_required(redirect_field_name='login_med', login_url='login_med')
+@user_passes_test(lambda user: is_not_medico(user), redirect_field_name='login_med',
+                  login_url='login_med')
 def editar_med(request, med_id):
     obj = get_object_or_404(Medico, id=med_id)
 
@@ -136,6 +145,8 @@ def editar_med(request, med_id):
 
 
 @login_required(redirect_field_name='login_med', login_url='login_med')
+@user_passes_test(lambda user: is_not_medico(user), redirect_field_name='login_med',
+                  login_url='login_med')
 def deletar_med(request, med_id):
     medico = get_object_or_404(Medico, id=med_id)
 
@@ -147,6 +158,18 @@ def deletar_med(request, med_id):
     return render(request, "medico/delete_med.html")
 
 
+def visualizar_perfil_med(request, medico_id):
+    medico = get_object_or_404(Medico, id=medico_id)
+
+    return render(request, 'usuario/detalhe_perfil.html', {
+        'medico': medico
+    })
+
+
+### MEDICO/PACIENTE
+@login_required(redirect_field_name='login_med', login_url='login_med')
+@user_passes_test(lambda user: is_not_medico(user), redirect_field_name='login_med',
+                  login_url='login_med')
 def adicionar_paciente(request):
     form = FormPacientes(request.POST or None)
 
@@ -167,13 +190,18 @@ def adicionar_paciente(request):
     return render(request, 'medico/adicionar_paciente.html', {'form': form})
 
 
+@login_required(redirect_field_name='login_med', login_url='login_med')
+@user_passes_test(lambda user: is_not_medico(user), redirect_field_name='login_med',
+                  login_url='login_med')
 def lista_pacientes(request):
-
     pacientes = MeusPacientes.objects.order_by('id')
 
     return render(request, 'medico/lista_pacientes.html', {'pacientes': pacientes})
 
 
+@login_required(redirect_field_name='login_med', login_url='login_med')
+@user_passes_test(lambda user: is_not_medico(user), redirect_field_name='login_med',
+                  login_url='login_med')
 def excluir_paciente(request, paciente_id):
     paciente = get_object_or_404(MeusPacientes, id=paciente_id)
 

@@ -1,0 +1,51 @@
+{% extends 'base.html'%}
+
+{%block content%}
+
+<div class="container">
+<h1 class="mt-5">{{ medico.dados_pessoais.first_name }} {{ medico.dados_pessoais.last_name }}</h1>
+
+
+  <dl>
+      <dt>ID</dt>
+      <dd>{{ medico.id }}</dd>
+
+      <dt>CRM</dt>
+      <dd>{{ medico.crm }}</dd>
+
+      <dt>E-mail</dt>
+      <dd>{{ medico.dados_pessoais.email }}</dd>
+
+      <dt>Data de Criação do perfil</dt>
+      <dd>{{ medico.data_criacao | date:'d/m/Y h:i:s'}}</dd>
+
+      <dt>Data de Nascimento</dt>
+      <dd>{{ medico.data_nascimento | date:'d/m/Y'}}</dd>
+
+      <dt>Gênero</dt>
+      <dd>{{ medico.genero }}</dd>
+
+      <dt>Bairro</dt>
+      <dd>{{ medico.bairro }}</dd>
+
+      <dt>Estado</dt>
+      <dd>{{ medico.estado }}</dd>
+
+      <dt>Cidade</dt>
+      <dd>{{ medico.cidade }}</dd>
+
+      <dt>País</dt>
+      <dd>{{ medico.pais }}</dd>
+
+
+    </dl>
+     <a href="#" class="btn btn-info btn-lg">
+      <span class="glyphicon glyphicon-log-out"></span> Editar Perfil
+    </a>
+    <a href="#" class="btn btn-info btn-lg">
+      <span class="glyphicon glyphicon-log-out"></span> Deletar Perfil
+    </a>
+
+
+</div>
+{%endblock%}
