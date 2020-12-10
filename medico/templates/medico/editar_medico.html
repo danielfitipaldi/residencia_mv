@@ -1,5 +1,29 @@
-{% extends 'base.html'%}
+{% extends 'base.html' %}
 
-{%block content%}
+{% block content %}
+
+<br><br>
+<div class="container-fluid">
+    <h2>Edite o seu perfil</h2>
+</div>
+
+<div class="container-fluid">
+    <!-- Create a Form -->
+    <form method="POST" enctype="multipart/form-data">
+        <!-- Security token by Django -->
+        {% csrf_token %}
+    <table class="table">
+        <!-- form as paragraph -->
+        {{ form1.as_p }}
+        {{ form2.as_p }}
+        <tr>
+            <td colspan="2">
+            <br>
+        <input type="submit" value="Update">
+        </td>
+            </tr>
+        </table>
+    </form>
+</div>
 
 {%endblock%}

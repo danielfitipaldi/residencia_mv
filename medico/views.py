@@ -4,11 +4,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .form import UserForm, MedicoForm, FormPacientes
 from django.contrib import auth, messages
 from .models import Medico, MeusPacientes
+from django.contrib.auth.models import Group
 
 
 def is_not_medico(user):
     if user:
-        return user.groups.filter(id=3).exists()
+        return user.groups.filter(name='medicos').exists()
     return False
 
 
@@ -39,6 +40,9 @@ def logout_med(request):
 
 
 def cadastrar_med(request):
+
+    Group.objects.get_or_create(name='laboratorios')
+
     form1 = UserForm(request.POST or None)
     form2 = MedicoForm(request.POST or None)
 
@@ -80,7 +84,8 @@ def cadastrar_med(request):
         raw_password = form1.cleaned_data['senha']
         user.set_password(raw_password)
         form1.save()
-        user.groups.add(3)
+        grupo_med = Group.objects.get(name='medicos')
+        user.groups.add(grupo_med)
         if form2.is_valid():
             medico = form2.save(commit=False)
             medico.dados_pessoais = user
@@ -141,7 +146,7 @@ def editar_med(request, med_id):
         messages.success(request, 'Cadastro atualizado')
         return redirect('dash_med')
 
-    return render(request, 'laboratorio/editar_laboratorio.html', {'form1': form1, 'form2': form2})
+    return render(request, 'medico/editar_medico.html', {'form1': form1, 'form2': form2})
 
 
 @login_required(redirect_field_name='login_med', login_url='login_med')
@@ -151,17 +156,22 @@ def deletar_med(request, med_id):
     medico = get_object_or_404(Medico, id=med_id)
 
     if request.method == "GET":
+        print('*' * 30)
+        print(medico.id)
         medico.delete()
-        messages.success(request, 'Usuário apagado com sucesso')
+        messages.success(request, 'Médico apagado com sucesso')
         return redirect('home')
 
     return render(request, "medico/delete_med.html")
 
 
+@login_required(redirect_field_name='login_med', login_url='login_med')
+@user_passes_test(lambda user: is_not_medico(user), redirect_field_name='login_med',
+                  login_url='login_med')
 def visualizar_perfil_med(request, medico_id):
     medico = get_object_or_404(Medico, id=medico_id)
 
-    return render(request, 'usuario/detalhe_perfil.html', {
+    return render(request, 'medico/detalhe_perfil_med.html', {
         'medico': medico
     })
 

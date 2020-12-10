@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.validators import validate_email
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.contrib.auth.models import Group
 from usuario.models import Exames
 from .form import *
 from django.contrib import auth, messages
@@ -34,6 +34,8 @@ def logout_lab(request):
 
 
 def cadastrar_lab(request):
+    Group.objects.get_or_create(name='laboratorios')
+
     form1 = UserForm(request.POST or None)
     form2 = LaboratorioForm(request.POST or None)
 
@@ -85,7 +87,8 @@ def cadastrar_lab(request):
         raw_password = form1.cleaned_data['senha']
         user.set_password(raw_password)
         form1.save()
-        user.groups.add(2)
+        grupo_lab = Group.objects.get(name='laboratorios')
+        user.groups.add(grupo_lab)
         if form2.is_valid():
             laboratorio = form2.save(commit=False)
             laboratorio.dados = user
@@ -103,7 +106,7 @@ def is_not_lab(user):
     e retorna True caso pertença.
     """
     if user:
-        return user.groups.filter(id=2).exists()
+        return user.groups.filter(name='laboratorios').exists()
     return False
 
 

@@ -1,6 +1,5 @@
-from django.contrib.auth.decorators import user_passes_test, permission_required, login_required
-from django.contrib.auth.models import User
-from django.core.paginator import Paginator
+from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -47,7 +46,7 @@ def is_not_usuario(user):
     e retorna True caso pertença.
     """
     if user:
-        return user.groups.filter(id=1).exists()
+        return user.groups.filter(name='usuarios').exists()
     return False
 
 
@@ -56,13 +55,15 @@ def is_not_usuario(user):
                   login_url='login')
 def dash_user(request):
     current_user = request.user.id
-    usuario = get_object_or_404(Usuario, id=current_user)
+    usuario = get_object_or_404(Usuario, usuario_id=current_user)
     contexto = {'usuario': usuario}
 
     return render(request, 'usuario/dash.html', contexto)
 
 
 def cadastrar(request):
+    Group.objects.get_or_create(name='usuarios')
+
     form1 = UserForm(request.POST or None)
     form2 = FormUsuario(request.POST or None)
     if request.method != 'POST':
@@ -107,7 +108,7 @@ def cadastrar(request):
         return render(request, 'usuario/pag_cadastro.html', {'form1': form1, 'form2': form2})
 
     if len(senha) < 8:
-        messages.error(request, 'Senhas não coincidem')
+        messages.error(request, 'As senhas devem ter 8 dígitos')
         form1 = UserForm()
         form2 = FormUsuario()
         return render(request, 'usuario/pag_cadastro.html', {'form1': form1, 'form2': form2})
@@ -127,7 +128,8 @@ def cadastrar(request):
         raw_password = form1.cleaned_data['senha']
         user.set_password(raw_password)
         form1.save()
-        user.groups.add(1)
+        grupo = Group.objects.get(name='usuarios')
+        user.groups.add(grupo)
         if form2.is_valid():
             usuario = form2.save(commit=False)
             usuario.usuario = user
@@ -178,7 +180,7 @@ def editar(request, usuario_id):
             form2.save()
 
         messages.success(request, 'Cadastro atualizado')
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('dash')
 
     return render(request, 'usuario/editar_cadastro.html', {'form1': form1, 'form2': form2})
 
@@ -188,12 +190,6 @@ def editar(request, usuario_id):
                   login_url='login')
 def listar(request):
     usuarios = Usuario.objects.order_by('-id')
-
-    paginator = Paginator(usuarios, 11)
-
-    page = request.GET.get('page')
-
-    usuarios = paginator.get_page(page)
 
     return render(request, 'usuario/lista_usuarios.html', {
         'usuarios': usuarios
@@ -209,7 +205,7 @@ def deletar_usuario(request, usuario_id):
     if request.method == "GET":
         usuario.delete()
         messages.success(request, 'Usuário apagado com sucesso')
-        return HttpResponseRedirect("/lista")
+        return redirect('home')
 
     return render(request, "usuario/delete_usuario.html")
 
@@ -251,15 +247,8 @@ def novo_exame(request):
 @user_passes_test(lambda user: is_not_usuario(user), redirect_field_name='login',
                   login_url='login')
 def listar_exames_usuario(request):
-
     current_user = request.user.id
     exames = Exames.objects.filter(paciente_id=current_user)
-
-    paginator = Paginator(exames, 11)
-
-    page = request.GET.get('page')
-
-    exames = paginator.get_page(page)
 
     return render(request, 'usuario/exames_por_usuario.html', {
         'exames': exames
@@ -296,5 +285,3 @@ def excluir_exame(request, exame_id):
         return HttpResponseRedirect('/dashboard/meus_exames/')
 
     return render(request, 'usuario/delete_exame.html')
-
-

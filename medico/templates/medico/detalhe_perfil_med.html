@@ -39,10 +39,10 @@
 
 
     </dl>
-     <a href="#" class="btn btn-info btn-lg">
+     <a href="{% url 'editar_med' medico.id%}" class="btn btn-info btn-lg">
       <span class="glyphicon glyphicon-log-out"></span> Editar Perfil
     </a>
-    <a href="#" class="btn btn-info btn-lg">
+    <a href="{% url 'deletar_med' medico.id %}" class="btn btn-info btn-lg">
       <span class="glyphicon glyphicon-log-out"></span> Deletar Perfil
     </a>
 

@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from laboratorio.models import Laboratorio
 
@@ -80,7 +80,6 @@ class Usuario(models.Model):
 
 
 class Exames(models.Model):
-
     paciente = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     laboratorio = models.ForeignKey(Laboratorio, on_delete=models.DO_NOTHING, null=True)
@@ -134,4 +133,3 @@ class Exames(models.Model):
 
     def __str__(self):
         return f'{self.paciente.first_name} {self.paciente.last_name}'
-
